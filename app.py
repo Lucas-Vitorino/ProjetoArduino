@@ -5,7 +5,7 @@ import datetime
 app = Flask(__name__)
 
 # 🔥 Substitua abaixo pelas suas credenciais reais do Firebase:
-FIREBASE_URL = "https://temp-arduino-9c80f-default-rtdb.firebaseio.com/"
+FIREBASE_URL = "https://temp-arduino-9c80f-default-rtdb.firebaseio.com"
 FIREBASE_SECRET = "702d5600320cddab9dc1af8ab50e0da4a2f09047"
 
 @app.route('/dados', methods=['GET'])
