@@ -36,10 +36,12 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
-from flask import render_template_string
+    
+# Adicionando a rota para o gráfico
+from flask import render_template
 
 @app.route('/grafico')
 def grafico():
-    return render_template_string(open("grafico.html", encoding="utf-8").read())
+    return render_template("grafico.html")
+
 
