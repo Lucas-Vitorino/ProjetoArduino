@@ -1,13 +1,15 @@
 from flask import Flask, request, render_template, jsonify
 import requests
 import datetime
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 
-import os
-
 FIREBASE_URL = os.getenv("FIREBASE_URL")
 FIREBASE_SECRET = os.getenv("FIREBASE_SECRET")
+
 
 
 @app.route('/dados', methods=['GET'])
