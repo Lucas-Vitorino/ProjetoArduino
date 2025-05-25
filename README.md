@@ -1,40 +1,82 @@
-# Regulador de Temperatura com Arduino
+# 🧠 Projeto: Monitor de Temperatura com Arduino, ESP-01 e Visualização Remota
 
-Este projeto utiliza um sensor de temperatura e um módulo relé para controlar automaticamente um sistema de ar-condicionado ou ventilação, com visualização em um display LCD.
-
-## ⚙️ Componentes utilizados
-
-- Arduino UNO
-- Sensor de temperatura (NTC ou similar com a biblioteca `Thermistor`)
-- Display LCD 16x2 (interface paralela)
-- Módulo Relé
-- Jumpers e Protoboard
-- Fonte de alimentação externa (se necessário)
-
-## 🧠 Funcionamento
-
-O sistema lê a temperatura ambiente continuamente e age conforme os seguintes critérios:
-
-- Se a temperatura **ultrapassar o valor máximo (ex: 29°C)**, o relé é **ativado**, ligando o sistema de refrigeração.
-- Se a temperatura **cair abaixo do valor mínimo (ex: 20°C)**, o relé é **desligado**.
-- A temperatura atual é exibida no display LCD em tempo real.
-
-O projeto também conta com **histerese** para evitar ligações/desligações frequentes.
-
-## 🛠️ Código
-
-O código está disponível no arquivo `.ino` deste repositório. Você pode abri-lo diretamente na IDE do Arduino.
-
-## 📦 Como usar
-
-1. Conecte os componentes ao Arduino conforme o esquema do código.
-2. Faça o upload do arquivo `.ino` via Arduino IDE.
-3. Alimente o Arduino e observe a leitura e o controle automático da temperatura.
+Este projeto integra um **Arduino UNO**, um **ESP-01** e um **sensor de temperatura NTC**, com exibição em **LCD I2C** e envio remoto de dados para um servidor Flask no **Render**, que armazena os valores no **Firebase Realtime Database** e exibe um **gráfico responsivo acessível via navegador**.
 
 ---
 
-Sinta-se à vontade para personalizar os valores de temperatura mínima e máxima dentro do código.
+## ⚙️ Funcionalidades
 
-## 📌 Licença
+- 📡 Envio de dados de temperatura via ESP-01 para um servidor online (Flask)
+- 📊 Visualização gráfica em tempo real pelo navegador (com autoatualização)
+- 📱 Layout responsivo para celular
+- 💾 Armazenamento de dados no Firebase
+- 🧊 Controle de ar-condicionado via relé com base em temperatura mínima/máxima
+- 📟 Exibição da temperatura atual no LCD 16x2 (via I2C)
 
-Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+---
+
+## 🔌 Esquema de ligação
+
+| Componente         | Pino Arduino         | Observação                                 |
+|--------------------|----------------------|--------------------------------------------|
+| Sensor NTC         | A2                   | Com divisor resistivo                      |
+| LCD I2C            | A4 (SDA), A5 (SCL)   | Alimentado via 5V/GND da protoboard        |
+| ESP-01 (adaptador) | D2 (TX), D3 (RX)     | Comunicação serial com SoftwareSerial      |
+| Relé (AC)          | D8                   | Aciona o ar-condicionado                   |
+| Protoboard         | 5V / GND             | Alimenta LCD e ESP via trilhas positivas   |
+
+---
+
+## 🧪 Lógica de funcionamento
+
+### No **Arduino UNO**:
+- Lê a temperatura com um NTC
+- Exibe no LCD 16x2 via I2C
+- Controla o relé conforme:
+  - Temperatura ≥ 26°C → **liga** o ar-condicionado
+  - Temperatura ≤ 22°C → **desliga**
+- Envia a temperatura via SoftwareSerial para o ESP-01
+
+### No **ESP-01**:
+- Conecta-se ao Wi-Fi
+- Recebe dados via Serial do Arduino
+- Envia os dados para o endpoint `/dados` de um servidor Flask hospedado no Render
+
+### No **servidor Flask (Render)**:
+- Rota `/dados?temp=XX.X` → grava os dados no Firebase
+- Rota `/grafico` → exibe um gráfico interativo em tempo real com os dados
+
+---
+
+## 🌐 Endpoints do servidor
+
+- `/dados?temp=XX.X` → recebe e grava temperatura
+- `/grafico` → mostra o gráfico com autoatualização a cada 15 segundos
+
+---
+
+## 📦 Tecnologias utilizadas
+
+- Arduino UNO + NTC + LCD I2C + ESP-01
+- Flask (Render)
+- Firebase Realtime Database
+- Chart.js
+- HTML + CSS responsivo
+
+---
+
+## 📲 Exemplo de acesso remoto
+
+- **Gráfico em tempo real:**  
+  [`https://projetoarduino.onrender.com/grafico`](https://projetoarduino.onrender.com/grafico)
+
+- **Teste de envio:**  
+  `https://projetoarduino.onrender.com/dados?temp=24.8`
+
+---
+
+## 🛠️ Para rodar localmente (servidor Flask)
+
+```bash
+pip install flask requests
+python app.py
