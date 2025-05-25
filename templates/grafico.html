@@ -7,13 +7,17 @@
   <style>
     body { font-family: sans-serif; text-align: center; padding: 20px; }
     canvas { max-width: 100%; }
+    h2, h3 { margin: 10px 0; }
   </style>
 </head>
 <body>
   <h2>Histórico de Temperatura 🌡️</h2>
+  <h3 id="ultima-temp" style="margin-bottom: 20px;">Carregando dados...</h3>
   <canvas id="grafico" height="100"></canvas>
 
   <script>
+    let chart;
+
     async function carregarDados() {
       const res = await fetch("/api/dados");
       const data = await res.json();
@@ -26,7 +30,19 @@
       }
 
       const ctx = document.getElementById('grafico').getContext('2d');
-      new Chart(ctx, {
+
+      const ultimaTemp = valores[valores.length - 1];
+      const ultimaHora = labels[labels.length - 1];
+
+      // Exibe a temperatura mais recente acima do gráfico
+      document.getElementById("ultima-temp").innerText =
+        `🌡️ Última temperatura: ${ultimaTemp} °C às ${ultimaHora}`;
+
+      if (chart) {
+        chart.destroy();
+      }
+
+      chart = new Chart(ctx, {
         type: 'line',
         data: {
           labels,
@@ -34,12 +50,17 @@
             label: 'Temperatura (°C)',
             data: valores,
             borderColor: 'blue',
+            pointBackgroundColor: 'red',
+            pointRadius: (ctx) => ctx.dataIndex === valores.length - 1 ? 6 : 2,
             fill: false,
             tension: 0.3
           }]
         },
         options: {
           responsive: true,
+          animation: {
+            duration: 500
+          },
           scales: {
             x: { title: { display: true, text: 'Hora' } },
             y: { title: { display: true, text: '°C' } }
@@ -49,6 +70,7 @@
     }
 
     carregarDados();
+    setInterval(carregarDados, 15000);
   </script>
 </body>
 </html>
