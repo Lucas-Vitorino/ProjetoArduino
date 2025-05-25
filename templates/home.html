@@ -1,58 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <title>Monitor de Temperatura</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    :root {
+      --bg: #f4f4f4;
+      --text: #000;
+      --footer: #888;
+      --button-bg: #007BFF;
+      --button-hover: #0056b3;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #f4f4f4;
+      --footer: #aaa;
+    }
+
     body {
+      background-color: var(--bg);
+      color: var(--text);
       font-family: sans-serif;
       text-align: center;
       padding: 2rem;
-      background-color: #f4f4f4;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
     }
+
     h1 {
       font-size: 1.8rem;
       margin-bottom: 1rem;
     }
+
+    #tema-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.2rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: inherit;
+    }
+
     p.temp {
       font-size: 1.1rem;
       margin-bottom: 2rem;
-      color: #333;
+      white-space: pre-line;
     }
+
     a.botao {
       display: inline-block;
       padding: 1rem 2rem;
       font-size: 1.2rem;
       color: white;
-      background-color: #007BFF;
+      background-color: var(--button-bg);
       border-radius: 8px;
       text-decoration: none;
       transition: background-color 0.3s;
     }
+
     a.botao:hover {
-      background-color: #0056b3;
+      background-color: var(--button-hover);
     }
+
     footer {
       margin-top: 3rem;
       font-size: 0.9rem;
-      color: #888;
+      color: var(--footer);
     }
   </style>
 </head>
 <body>
+  <button id="tema-toggle">🌙</button>
+
   <h1>🌡️ Monitor de Temperatura com Arduino</h1>
 
-  {% if temperatura %}
-    <p class="temp">
-      Última leitura: <strong>{{ temperatura }} °C</strong><br>
-      em {{ data }} às {{ hora }} (BRT)
-    </p>
-  {% else %}
-    <p class="temp">Nenhuma leitura registrada ainda.</p>
-  {% endif %}
+  <p id="dados" class="temp">Carregando...</p>
 
-  <a class="botao" href="/grafico">Ver Gráfico 📈</a>
+  <a class="botao" href="/grafico">📈 Ver Gráfico</a>
+
   <footer>Desenvolvido por Lucas Vitorino</footer>
+
+  <script>
+    async function atualizarTemperatura() {
+      try {
+        const res = await fetch("/api/ultima");
+        const data = await res.json();
+        if (data.temperatura) {
+          document.getElementById("dados").innerText =
+            `🌡️ Última leitura: ${data.temperatura} °C\n📅 ${data.data} ⏰ ${data.hora} (BRT)`;
+        } else {
+          document.getElementById("dados").innerText = "Nenhuma leitura registrada.";
+        }
+      } catch {
+        document.getElementById("dados").innerText = "Erro ao carregar dados.";
+      }
+    }
+
+    atualizarTemperatura();
+    setInterval(atualizarTemperatura, 15000);
+
+    // 🌙 Alternância de tema claro/escuro
+    const toggleBtn = document.getElementById("tema-toggle");
+    const body = document.body;
+
+    function aplicarTema(tema) {
+      if (tema === "dark") {
+        body.classList.add("dark");
+        toggleBtn.textContent = "☀️";
+      } else {
+        body.classList.remove("dark");
+        toggleBtn.textContent = "🌙";
+      }
+      localStorage.setItem("tema", tema);
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      const temaAtual = body.classList.contains("dark") ? "light" : "dark";
+      aplicarTema(temaAtual);
+    });
+
+    aplicarTema(localStorage.getItem("tema") || "light");
+  </script>
 </body>
 </html>
