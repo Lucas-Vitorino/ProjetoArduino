@@ -32,7 +32,8 @@ def api_dados():
 
 @app.route('/')
 def home():
-    return 'Servidor do Arduino está online!'
+    return render_template("home.html")
+
 
 @app.route('/grafico')
 def grafico():
