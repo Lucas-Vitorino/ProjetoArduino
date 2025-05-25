@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import requests
 import datetime
 
@@ -36,9 +36,9 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-    
+
 # Adicionando a rota para o gráfico
-from flask import render_template
+
 
 @app.route('/grafico')
 def grafico():
