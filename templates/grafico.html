@@ -23,8 +23,16 @@
       margin-bottom: 1rem;
     }
 
-    canvas {
+    #grafico-container {
+      position: relative;
+      width: 100%;
       max-width: 100%;
+      margin: auto;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
     }
 
     @media (min-width: 600px) {
@@ -36,7 +44,10 @@
 <body>
   <h2>🌡️ Histórico de Temperatura 🌡️</h2>
   <h3 id="ultima-temp">Carregando...</h3>
-  <canvas id="grafico" height="250"></canvas>
+
+  <div id="grafico-container">
+    <canvas id="grafico"></canvas>
+  </div>
 
   <script>
     let chart;
@@ -49,7 +60,7 @@
 
       for (const chave in data) {
         const horaUTC = new Date(data[chave].hora);
-        const horaLocal = new Date(horaUTC.getTime() - 3 * 60 * 60 * 1000);
+        const horaLocal = new Date(horaUTC.getTime() - 3 * 60 * 60 * 1000); // UTC-3
         const dataFormatada = horaLocal.toLocaleDateString('pt-BR');
         const horaFormatada = horaLocal.toLocaleTimeString('pt-BR');
         labels.push(`${dataFormatada} ${horaFormatada}`);
@@ -81,7 +92,8 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
+          aspectRatio: 2,
           animation: { duration: 500 },
           plugins: {
             legend: {
