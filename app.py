@@ -32,7 +32,21 @@ def api_dados():
 
 @app.route('/')
 def home():
-    return render_template("home.html")
+    r = requests.get(f"{FIREBASE_URL}/leituras.json?auth={FIREBASE_SECRET}")
+    if r.status_code == 200:
+        dados = r.json()
+        if dados:
+            ultima = list(dados.values())[-1]
+            temp = ultima.get("temperatura")
+            hora_iso = ultima.get("hora")
+            if temp and hora_iso:
+                hora_utc = datetime.datetime.fromisoformat(hora_iso)
+                hora_brt = hora_utc - datetime.timedelta(hours=3)
+                data = hora_brt.strftime("%d/%m/%Y")
+                hora = hora_brt.strftime("%H:%M:%S")
+                return render_template("home.html", temperatura=temp, data=data, hora=hora)
+    return render_template("home.html", temperatura=None)
+
 
 
 @app.route('/grafico')
