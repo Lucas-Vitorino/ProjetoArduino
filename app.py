@@ -4,8 +4,11 @@ import datetime
 
 app = Flask(__name__)
 
-FIREBASE_URL = "https://temp-arduino-9c80f-default-rtdb.firebaseio.com"
-FIREBASE_SECRET = "702d5600320cddab9dc1af8ab50e0da4a2f09047"
+import os
+
+FIREBASE_URL = os.getenv("FIREBASE_URL")
+FIREBASE_SECRET = os.getenv("FIREBASE_SECRET")
+
 
 @app.route('/dados', methods=['GET'])
 def receber_dados():
