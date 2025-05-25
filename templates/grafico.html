@@ -2,18 +2,41 @@
 <html>
 <head>
   <title>Temperatura - Gráfico</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; }
-    canvas { max-width: 100%; }
-    h2, h3 { margin: 10px 0; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 1rem;
+      margin: 0;
+      background-color: #fff;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+
+    @media (min-width: 600px) {
+      h2 { font-size: 1.8rem; }
+      h3 { font-size: 1.2rem; }
+    }
   </style>
 </head>
 <body>
   <h2>🌡️ Histórico de Temperatura 🌡️</h2>
-  <h3 id="ultima-temp" style="margin-bottom: 20px;">Carregando dados...</h3>
-  <canvas id="grafico" height="100"></canvas>
+  <h3 id="ultima-temp">Carregando...</h3>
+  <canvas id="grafico" height="250"></canvas>
 
   <script>
     let chart;
@@ -26,26 +49,19 @@
 
       for (const chave in data) {
         const horaUTC = new Date(data[chave].hora);
-        const horaLocal = new Date(horaUTC.getTime() - 3 * 60 * 60 * 1000); // UTC-3
-
+        const horaLocal = new Date(horaUTC.getTime() - 3 * 60 * 60 * 1000);
         const dataFormatada = horaLocal.toLocaleDateString('pt-BR');
         const horaFormatada = horaLocal.toLocaleTimeString('pt-BR');
-
-        labels.push(`${dataFormatada} - ${horaFormatada} (BRT)`);
+        labels.push(`${dataFormatada} ${horaFormatada}`);
         valores.push(data[chave].temperatura);
       }
 
-      const ctx = document.getElementById('grafico').getContext('2d');
-
       const ultimaTemp = valores[valores.length - 1];
-      const horaUTCUltima = new Date(data[Object.keys(data).pop()].hora);
-      const horaLocalUltima = new Date(horaUTCUltima.getTime() - 3 * 60 * 60 * 1000);
-
-      const dataFinal = horaLocalUltima.toLocaleDateString('pt-BR');
-      const horaFinal = horaLocalUltima.toLocaleTimeString('pt-BR');
-
+      const ultimaHora = labels[labels.length - 1];
       document.getElementById("ultima-temp").innerText =
-        `🌡️ Última temperatura: ${ultimaTemp} °C às ${dataFinal} - ${horaFinal} (BRT)`;
+        `🌡️ Última temperatura: ${ultimaTemp} °C às ${ultimaHora} (BRT)`;
+
+      const ctx = document.getElementById('grafico').getContext('2d');
 
       if (chart) chart.destroy();
 
@@ -65,10 +81,36 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           animation: { duration: 500 },
+          plugins: {
+            legend: {
+              labels: {
+                font: {
+                  size: window.innerWidth < 600 ? 10 : 14
+                }
+              }
+            }
+          },
           scales: {
-            x: { title: { display: true, text: 'Hora' } },
-            y: { title: { display: true, text: '°C' } }
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  size: window.innerWidth < 600 ? 9 : 12
+                }
+              },
+              title: { display: true, text: 'Hora' }
+            },
+            y: {
+              ticks: {
+                font: {
+                  size: window.innerWidth < 600 ? 10 : 12
+                }
+              },
+              title: { display: true, text: '°C' }
+            }
           }
         }
       });
