@@ -15,7 +15,7 @@
 
   <script>
     async function carregarDados() {
-      const res = await fetch("https://temp-arduino-9c80f-default-rtdb.firebaseio.com/leituras.json");
+      const res = await fetch("/api/dados");
       const data = await res.json();
       const labels = [];
       const valores = [];
