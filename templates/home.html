@@ -13,7 +13,12 @@
     }
     h1 {
       font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    p.temp {
+      font-size: 1.1rem;
       margin-bottom: 2rem;
+      color: #333;
     }
     a.botao {
       display: inline-block;
@@ -37,6 +42,16 @@
 </head>
 <body>
   <h1>🌡️ Monitor de Temperatura com Arduino</h1>
+
+  {% if temperatura %}
+    <p class="temp">
+      Última leitura: <strong>{{ temperatura }} °C</strong><br>
+      em {{ data }} às {{ hora }} (BRT)
+    </p>
+  {% else %}
+    <p class="temp">Nenhuma leitura registrada ainda.</p>
+  {% endif %}
+
   <a class="botao" href="/grafico">Ver Gráfico 📈</a>
   <footer>Desenvolvido por Lucas Vitorino</footer>
 </body>
