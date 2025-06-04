@@ -25,6 +25,7 @@ void setup() {
 }
 
 void loop() {
+  //Transforma o valor da resistência em graus Celsius
   int leitura = analogRead(sensorNTC);
   float resistencia = (1023.0 / leitura - 1.0) * 10000.0;
   float temperatura = 1.0 / (log(resistencia / 10000.0) / 3950.0 + 1.0 / 298.15) - 273.15;
