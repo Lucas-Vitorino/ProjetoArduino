@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char* ssid = "YASMIN_E_LUCAS_2.4G";
-const char* senha = "Judo@202353";
+const char* ssid = "Nome do WIFI";
+const char* senha = "Senha do WIFI";
 const String host = "https://projetoarduino.onrender.com/dados";
 
 void setup() {
